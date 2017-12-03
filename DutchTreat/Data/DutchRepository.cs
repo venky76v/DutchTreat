@@ -52,5 +52,18 @@ namespace DutchTreat.Data
                 .ThenInclude(i => i.Product)
                 .ToList();
         }
+
+        public Order GetOrderById(int id)
+        {
+            return _ctx.Orders
+                .Include(o => o.Items)
+                .ThenInclude(i => i.Product)
+                .Where(o => o.Id == id).FirstOrDefault();
+        }
+
+        public void AddEntity(object model)
+        {
+            _ctx.Add(model);
+        }
     }
 }
