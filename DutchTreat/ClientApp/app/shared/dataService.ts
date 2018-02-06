@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import { Product } from "./product";
 import { Order, OrderItem } from "./order";
 import { Injectable } from "@angular/core";
+import { Response } from "@angular/http";
 import 'rxjs/add/operator/map';
 
 @Injectable()
@@ -10,6 +11,8 @@ export class DataService {
 
     constructor(private http: HttpClient) { }
 
+    private token: string = "";
+    private tokenExpiration: Date;
     public order: Order = new Order();
     public products: Product[] = [];
 
@@ -21,6 +24,22 @@ export class DataService {
                 return true;
             });
     }
+
+    public get loginRequired(): boolean {
+        return this.token.length == 0 || this.tokenExpiration > new Date();
+    }
+
+    public login(creds) {
+        return this.http.post("/account/createtoken", creds)
+            .map((response: Response) => {
+                let tokenInfo = response.json();
+                this.token = tokenInfo.token;
+                this.tokenExpiration = tokenInfo.expiration;
+
+                return true;
+            });
+    }
+
 
     public AddToOrder(product: Product) {
 

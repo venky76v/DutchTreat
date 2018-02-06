@@ -12,30 +12,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var dataService_1 = require("../shared/dataService");
 var router_1 = require("@angular/router");
-var Cart = /** @class */ (function () {
-    function Cart(data, router) {
+var Login = /** @class */ (function () {
+    function Login(data, router) {
         this.data = data;
         this.router = router;
+        this.errorMessage = "";
+        this.creds = {
+            username: "",
+            password: ""
+        };
     }
-    Cart.prototype.onCheckout = function () {
-        if (this.data.loginRequired) {
-            // Force to login before checking out items
-            this.router.navigate(["login"]);
-        }
-        else {
-            // Go to checkout
-            this.router.navigate(["checkout"]);
-        }
+    Login.prototype.onLogin = function () {
+        var _this = this;
+        // call the login service
+        this.data.login(this.creds)
+            .subscribe(function (success) {
+            if (success) {
+                if (_this.data.order.items.length == 0) {
+                    _this.router.navigate([""]);
+                }
+                else {
+                    _this.router.navigate(["checkout"]);
+                }
+            }
+        }, function (err) { return _this.errorMessage = "Failed to login"; });
     };
-    Cart = __decorate([
+    Login = __decorate([
         core_1.Component({
-            selector: "the-cart",
-            templateUrl: "cart.component.html",
-            styleUrls: []
+            selector: "login",
+            templateUrl: "login.component.html"
         }),
         __metadata("design:paramtypes", [dataService_1.DataService, router_1.Router])
-    ], Cart);
-    return Cart;
+    ], Login);
+    return Login;
 }());
-exports.Cart = Cart;
-//# sourceMappingURL=cart.component.js.map
+exports.Login = Login;
+//# sourceMappingURL=login.component.js.map
